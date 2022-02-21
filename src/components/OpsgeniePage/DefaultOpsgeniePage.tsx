@@ -4,10 +4,14 @@ import { IncidentsList } from '../IncidentsTable';
 import { OnCallList } from '../OnCallList';
 import { Analytics } from '../Analytics';
 import { Layout } from './Layout';
+import { ServiceList } from '../ServiceList';
 
 export const DefaultOpsgeniePage = () => {
     return (
         <Layout>
+            <Layout.Route path="services" title="Services">
+                <ServiceList />
+            </Layout.Route>
             <Layout.Route path="who-is-on-call" title="Who is on-call">
                 <OnCallList />
             </Layout.Route>

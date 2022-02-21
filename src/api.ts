@@ -1,4 +1,4 @@
-import { Alert, Incident, OnCallParticipantRef, Schedule, Team } from './types';
+import { Alert, Incident, IncidentTimelineEntry, OnCallParticipantRef, Schedule, Service, Team } from './types';
 import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export const opsgenieApiRef = createApiRef<Opsgenie>({
@@ -32,6 +32,8 @@ export interface Opsgenie {
   getOnCall(scheduleId: string): Promise<OnCallParticipantRef[]>;
 
   getTeams(): Promise<Team[]>;
+  getServices(): Promise<Service[]>;
+  getIncidentTimeline(incident: Incident): Promise<IncidentTimelineEntry[]>;
 
   getUserDetailsURL(userId: string): string;
 }
@@ -59,8 +61,18 @@ interface ScheduleOnCallResponse {
   };
 }
 
+interface ServicesResponse {
+  data: Service[];
+}
+
 interface TeamsResponse {
   data: Team[];
+}
+
+interface IncidentTimelineResponse {
+  data: {
+    entries: IncidentTimelineEntry[];
+  };
 }
 
 const DEFAULT_PROXY_PATH = '/opsgenie/api';
@@ -164,6 +176,16 @@ export class OpsgenieApi implements Opsgenie {
     await this.call(`/v2/alerts/${alert.id}/close`, init);
   }
 
+  async getIncidentTimeline(
+    incident: Incident,
+  ): Promise<IncidentTimelineEntry[]> {
+    const response = await this.fetch<IncidentTimelineResponse>(
+      `/v2/incident-timelines/${incident.id}/entries`,
+    );
+
+    return response.data.entries;
+  }
+
   async getSchedules(): Promise<Schedule[]> {
     const response = await this.fetch<SchedulesResponse>("/v2/schedules");
 
@@ -192,6 +214,15 @@ export class OpsgenieApi implements Opsgenie {
 
   getUserDetailsURL(userId: string): string {
     return `${this.domain}/settings/users/${userId}/detail`;
+  }
+
+
+  async getServices(): Promise<Service[]> {
+    const response = await this.fetch<ServicesResponse>(
+      '/v1/services?query=tags:backstage'
+    );
+
+    return response.data;
   }
 
   private async apiUrl() {

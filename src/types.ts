@@ -28,6 +28,7 @@ export interface Incident {
   updatedAt: string;
   impactStartDate: string;
   impactEndDate: string;
+  impactedServices: string[];
   responders: ResponderRef[];
   extraProperties: Record<string, string>;
 }
@@ -53,4 +54,35 @@ export interface Schedule {
 export interface Team {
   id: string; // UUID
   name: string; // TeamName
+}
+
+export interface Service {
+  id: string; // UUID
+  name: string; // ScheduleName
+  description: string;
+  tags: string[];
+  teamId: string;
+  isExternal: boolean;
+  // needs to be set locally
+  _incidents: Incident[];
+}
+
+export interface IncidentTimelineEntry {
+  id: string; // UUID
+  group: string;
+  type: string;
+  eventTime: string;
+  title: {
+    content: string;
+    type: string;
+  };
+  description: {
+    name: string;
+    type: string;
+  };
+  actor: {
+    name: string;
+    type: string;
+  };
+  hidden: boolean;
 }

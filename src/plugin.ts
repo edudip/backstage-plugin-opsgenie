@@ -20,6 +20,7 @@ export const opsGeniePlugin = createPlugin({
       api: opsgenieApiRef,
       deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef, configApi: configApiRef },
       factory: ({ discoveryApi, identityApi, configApi }) => {
+        console.log(configApi.getString("opsgenie.domain"))
         return new OpsgenieApi({
           discoveryApi: discoveryApi,
           identityApi: identityApi,
